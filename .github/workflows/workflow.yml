@@ -6,6 +6,7 @@ jobs:
   Phigros:
     runs-on: ubuntu-22.04
     steps:
+    - uses: actions/checkout@v2
     - run: |
         git config --global user.name 'GithubAction'
         git config --global user.email 'seed@gmail.com'
