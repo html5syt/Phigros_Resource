@@ -1,0 +1,12 @@
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: '5 9 * * 5,6'
+jobs:
+  Phigros:
+    runs-on: ubuntu-22.04
+    steps:
+    - run: |
+        git config --global user.name 'GithubAction'
+        git config --global user.email 'seed@gmail.com'
+    - run: sh main.sh
