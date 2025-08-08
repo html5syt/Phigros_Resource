@@ -25,41 +25,7 @@ git clone --no-checkout --single-branch -b chart https://github.com/html5syt/Phi
 git clone --no-checkout --single-branch -b music https://github.com/html5syt/Phigros_Resource music
 python3 gameInformation.py ../Phigros.apk
 python3 resource.py ../Phigros.apk
-
-
-
-# 设置FFmpeg日志级别（仅显示错误信息）
-export FFREPORT="file=/dev/null:level=32"
-
-# 查找并处理文件
-find . -type f \( -iname "*.png" -o -iname "*.wav" \) -print0 | while IFS= read -r -d $'\0' file; do
-    case "${file,,}" in
-        *.png)
-            output="${file%.*}.webp"
-            echo "正在转换: ${file} -> ${output}"
-            if ffmpeg -v error -i "$file" "$output" &>/dev/null; then
-                rm -f "$file"
-                echo "转换成功并已删除原文件: ${file}"
-            else
-                echo "错误：转换失败 - ${file}" >&2
-                rm -f "$output" 2>/dev/null
-            fi
-            ;;
-        *.wav)
-            output="${file%.*}.mp3"
-            echo "正在转换: ${file} -> ${output}"
-            if ffmpeg -v error -i "$file" -c:a libmp3lame -q:a 2 "$output" &>/dev/null; then
-                rm -f "$file"
-                echo "转换成功并已删除原文件: ${file}"
-            else
-                echo "错误：转换失败 - ${file}" >&2
-                rm -f "$output" 2>/dev/null
-            fi
-            ;;
-    esac
-done
-
-echo "所有文件处理完成！"
+python3 webp.py
 
 cd info
 echo $version > version.txt
