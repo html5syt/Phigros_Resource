@@ -14,8 +14,8 @@ jobs:
       with:
         dotnet-version: '6.x'
     - run: |
-        git config --global user.name 'GithubAction'
-        git config --global user.email 'seed@gmail.com'
+        git config --global user.name "${GITHUB_ACTOR}"
+        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
     - run: sh main.sh
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 注入Token
