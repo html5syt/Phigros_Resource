@@ -6,7 +6,10 @@ jobs:
   Phigros:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: true 
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.x'
@@ -14,3 +17,5 @@ jobs:
         git config --global user.name 'GithubAction'
         git config --global user.email 'seed@gmail.com'
     - run: sh main.sh
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 注入Token
