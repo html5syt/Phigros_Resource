@@ -8,7 +8,7 @@ fi
 sudo apt-get install libvorbisenc2 ffmpeg -y
 pip install UnityPy~=1.10.0
 pip install fsb5
-git clone --single-branch -b master https://github.com/html5syt/Phigros_Resource/
+git clone --single-branch -b master https://$1@github.com/html5syt/Phigros_Resource/
 wget -nv -O Phigros.apk `cat url.txt`
 java -jar PhigrosMetadata-1.2.jar Phigros.apk
 dotnet Il2CppDumper.dll libil2cpp.so global-metadata.dat .
@@ -16,13 +16,13 @@ dotnet TypeTreeGeneratorCLI.dll -p DummyDll/ -a Assembly-CSharp.dll -v 2019.4.31
 
 cd Phigros_Resource
 git commit -am "$version" && git push
-git clone --single-branch -b info https://github.com/html5syt/Phigros_Resource info
-git clone --no-checkout --single-branch -b avatar https://github.com/html5syt/Phigros_Resource avatar
-git clone --no-checkout --single-branch -b illustration https://github.com/html5syt/Phigros_Resource illustration
-git clone --no-checkout --single-branch -b illustrationBlur https://github.com/html5syt/Phigros_Resource illustrationBlur
-git clone --no-checkout --single-branch -b illustrationLowRes https://github.com/html5syt/Phigros_Resource illustrationLowRes
-git clone --no-checkout --single-branch -b chart https://github.com/html5syt/Phigros_Resource chart
-git clone --no-checkout --single-branch -b music https://github.com/html5syt/Phigros_Resource music
+git clone --single-branch -b info https://$1@github.com/html5syt/Phigros_Resource info
+git clone --no-checkout --single-branch -b avatar https://$1@github.com/html5syt/Phigros_Resource avatar
+git clone --no-checkout --single-branch -b illustration https://$1@github.com/html5syt/Phigros_Resource illustration
+git clone --no-checkout --single-branch -b illustrationBlur https://$1@github.com/html5syt/Phigros_Resource illustrationBlur
+git clone --no-checkout --single-branch -b illustrationLowRes https://$1@github.com/html5syt/Phigros_Resource illustrationLowRes
+git clone --no-checkout --single-branch -b chart https://$1@github.com/html5syt/Phigros_Resource chart
+git clone --no-checkout --single-branch -b music https://$1@github.com/html5syt/Phigros_Resource music
 python3 gameInformation.py ../Phigros.apk
 python3 resource.py ../Phigros.apk
 python3 webp.py
