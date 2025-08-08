@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # 支持的扩展名映射
 CONVERSION_MAP = {
     '.png': ('.webp', 'ffmpeg -i "{input}" -compression_level 6 "{output}"'),
-    '.wav': ('.mp3', 'ffmpeg -i "{input}" -codec:a libmp3lame -qscale:a 2 "{output}"')
+    '.ogg': ('.mp3', 'ffmpeg -i "{input}" -codec:a libmp3lame -qscale:a 2 "{output}"')
 }
 
 def convert_file(input_path, output_path, command):
@@ -36,7 +36,7 @@ def convert_file(input_path, output_path, command):
         
         # 删除原始文件
         os.remove(input_path)
-        logger.info(f"转换成功: {input_path} -> {output_path}")
+        logger.info(f"转换成功并删除源文件: {input_path} -> {output_path}")
         return True
     except Exception as e:
         logger.error(f"转换失败 {input_path}: {str(e)}")
@@ -57,9 +57,14 @@ def worker(task_queue):
         new_ext, command_template = CONVERSION_MAP[ext]
         output_path = os.path.splitext(file_path)[0] + new_ext
         
-        # 跳过已存在的输出文件
+        # 处理已存在的输出文件
         if os.path.exists(output_path):
-            logger.warning(f"跳过已存在的文件: {output_path}")
+            try:
+                # 直接删除源文件
+                os.remove(file_path)
+                logger.info(f"跳过转换（输出文件已存在），已删除源文件: {file_path}")
+            except Exception as e:
+                logger.error(f"删除源文件失败 {file_path}: {str(e)}")
             task_queue.task_done()
             continue
             
@@ -105,6 +110,7 @@ def main():
         return
     
     logger.info(f"发现 {task_queue.qsize()} 个文件待处理，使用 {args.jobs} 线程...")
+    logger.warning("注意: 所有源文件将在处理后删除!")
     
     # 创建工作线程
     threads = []
@@ -120,7 +126,7 @@ def main():
     for t in threads:
         t.join()
     
-    logger.info("所有任务处理完成")
+    logger.info("所有任务处理完成，源文件已删除")
 
 if __name__ == "__main__":
     main()

@@ -70,6 +70,9 @@ commit_and_push illustrationLowRes "$version"
 commit_and_push chart "$version"
 commit_and_push music "$version"
 
+echo "Update Success"
+
 cd ..
 echo $version > version.txt
-git commit -am "$version" && git push
+git add version.txt
+git commit -m $version && git push
