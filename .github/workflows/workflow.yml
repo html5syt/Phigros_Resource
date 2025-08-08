@@ -16,6 +16,6 @@ jobs:
     - run: |
         git config --global user.name 'GithubAction'
         git config --global user.email 'seed@gmail.com'
-    - run: sh main.sh ${user_name}:${{ secrets.GITHUB_TOKEN }}
+    - run: sh main.sh ${{ secrets.GITHUB_TOKEN }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 注入Token
