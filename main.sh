@@ -27,11 +27,6 @@ python3 gameInformation.py ../Phigros.apk
 python3 resource.py ../Phigros.apk
 
 
-# 检查ffmpeg是否安装
-if ! command -v ffmpeg &> /dev/null; then
-    echo "错误：ffmpeg未安装，请先安装ffmpeg！" >&2
-    exit 1
-fi
 
 # 设置FFmpeg日志级别（仅显示错误信息）
 export FFREPORT="file=/dev/null:level=32"
