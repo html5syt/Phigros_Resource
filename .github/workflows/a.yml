@@ -1,0 +1,66 @@
+name: Shrink Branches to Single Commit
+
+on:
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  shrink-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 需要写入权限执行强制推送
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取所有分支和完整历史
+
+    - name: Setup Git
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+
+    - name: Process branches
+      run: |
+        # 获取除master外的所有远程分支
+        git for-each-ref --format='%(refname:short)' refs/remotes/origin | 
+        grep -v 'origin/master$' |
+        sed 's|origin/||' |
+        while read -r branch; do
+          echo "Processing branch: $branch"
+          
+          # 切换到目标分支
+          git checkout -b "$branch" "origin/$branch"
+          
+          # 获取最新提交信息
+          latest_commit=$(git rev-parse HEAD)
+          commit_message=$(git log -1 --pretty=%B)
+          commit_author=$(git log -1 --pretty=%an)
+          commit_email=$(git log -1 --pretty=%ae)
+          commit_date=$(git log -1 --pretty=%aD)
+          
+          # 创建孤立分支（无历史）
+          git checkout --orphan temp-squash
+          
+          # 添加所有文件
+          git add -A
+          
+          # 使用原始提交信息创建新提交
+          GIT_COMMITTER_DATE="$commit_date" git commit \
+            --author="$commit_author <$commit_email>" \
+            -m "$commit_message" \
+            --date="$commit_date"
+          
+          # 删除原分支并重命名临时分支
+          git branch -D "$branch"
+          git branch -m "$branch"
+          
+          # 强制推送到远程
+          git push --force origin "$branch"
+          echo "Successfully shrinked $branch"
+          
+          # 清理工作树
+          git checkout --orphan empty
+          git reset --hard
+          git clean -fdx
+        done

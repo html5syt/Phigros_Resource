@@ -74,5 +74,5 @@ echo "Update Success"
 
 cd ..
 echo $version > version.txt
-git add version.txt
+git add -f version.txt
 git commit -m $version && git push
