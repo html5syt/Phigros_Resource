@@ -1,0 +1,59 @@
+name: Merge Legacy Branches to Resource
+
+on:
+  workflow_dispatch:
+
+jobs:
+  merge-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Git
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        
+    - name: Create Resource branch
+      run: |
+        # 创建或切换到Resource分支
+        git checkout -B Resource
+        
+        # 创建目录结构
+        mkdir -p {avatar,chart,illustration,illustrationBlur,illustrationLowRes,info,music}
+        git add .
+        git commit -m "Initialize Resource branch" || echo "No changes"
+        git push origin Resource
+        
+    - name: Merge legacy branches
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 合并每个旧分支到对应目录
+        for branch in avatar chart illustration illustrationBlur illustrationLowRes info music; do
+          echo "Merging $branch branch..."
+          
+          # 获取旧分支内容
+          git fetch origin $branch:$branch
+          
+          # 切换到Resource分支
+          git checkout Resource
+          
+          # 合并到对应目录
+          git checkout $branch -- .
+          mkdir -p $branch
+          mv -f !("$branch") "$branch"/ || true
+          
+          # 提交更改
+          git add .
+          git commit -m "Merge $branch branch into Resource"
+          git push origin Resource
+        done
+        
+        echo "All branches merged to Resource branch"

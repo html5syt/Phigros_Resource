@@ -1,11 +1,12 @@
+#!/bin/bash
 set -e
 
-# 配置全局Git用户信息（必须）
+# 配置全局Git用户信息
 git config --global user.email "action@github.com"
 git config --global user.name "GitHub Action"
 
-version=`python3 taptap.py`
-if [ "$version" = `cat version.txt` ]
+version=$(python3 taptap.py)
+if [ "$version" = "$(cat version.txt)" ]
 then
     echo "No update"
     exit
@@ -17,9 +18,9 @@ pip install fsb5
 
 # 使用带token的URL进行克隆
 REPO_URL="https://html5syt:${GITHUB_TOKEN}@github.com/html5syt/Phigros_Resource"
-git clone --single-branch -b master "$REPO_URL"
+git clone --single-branch -b master "$REPO_URL" Phigros_Resource
 
-wget -nv -O Phigros.apk `cat url.txt`
+wget -nv -O Phigros.apk "$(cat url.txt)"
 java -jar PhigrosMetadata-1.2.jar Phigros.apk
 dotnet Il2CppDumper.dll libil2cpp.so global-metadata.dat .
 dotnet TypeTreeGeneratorCLI.dll -p DummyDll/ -a Assembly-CSharp.dll -v 2019.4.31f1c1 -c GameInformation -c GetCollectionControl -c TipsProvider -d json_min -o Phigros_Resource/typetree.json
@@ -27,52 +28,34 @@ dotnet TypeTreeGeneratorCLI.dll -p DummyDll/ -a Assembly-CSharp.dll -v 2019.4.31
 cd Phigros_Resource
 git commit -am "$version" && git push
 
-# 克隆各分支时使用认证URL
-clone_and_set_branch() {
-    branch=$1
-    git clone --no-checkout --single-branch -b "$branch" "$REPO_URL" "$branch"
-    cd "$branch"
-    git config core.sparsecheckout true
-    echo "/*" > .git/info/sparse-checkout
-    git checkout "$branch"
-    cd ..
-}
+# 创建Resource分支的本地副本
+git checkout -b Resource origin/Resource 2>/dev/null || git checkout --orphan Resource
 
-clone_and_set_branch info
-clone_and_set_branch avatar
-clone_and_set_branch illustration
-clone_and_set_branch illustrationBlur
-clone_and_set_branch illustrationLowRes
-clone_and_set_branch chart
-clone_and_set_branch music
+# 确保目录结构存在
+mkdir -p {avatar,chart,illustration,illustrationBlur,illustrationLowRes,info,music}
 
-python3 gameInformation.py ../Phigros.apk
-python3 resource.py ../Phigros.apk
-python3 webp.py
+# 处理资源
+python3 ../gameInformation.py ../Phigros.apk
+python3 ../resource.py ../Phigros.apk
+python3 ../webp.py
 
-# 提交各分支的函数
-commit_and_push() {
-    branch_dir=$1
-    commit_msg=$2
-    cd "$branch_dir"
-    git add .
-    # 强制使用指定分支的远程URL（包含token）
-    git remote set-url origin "$REPO_URL"
-    git commit -m "$commit_msg" && git push origin "$branch_dir"
-    cd ..
-}
+# 移动资源到对应目录
+mv avatar/* avatar/ 2>/dev/null || true
+mv chart/* chart/ 2>/dev/null || true
+mv illustration/* illustration/ 2>/dev/null || true
+mv illustrationBlur/* illustrationBlur/ 2>/dev/null || true
+mv illustrationLowRes/* illustrationLowRes/ 2>/dev/null || true
+mv info/* info/ 2>/dev/null || true
+mv music/* music/ 2>/dev/null || true
 
-commit_and_push info "$version"
-commit_and_push avatar "$version"
-commit_and_push illustration "$version"
-commit_and_push illustrationBlur "$version"
-commit_and_push illustrationLowRes "$version"
-commit_and_push chart "$version"
-commit_and_push music "$version"
+# 提交所有更改
+git add -f .
+git commit -m "$version"
+git push origin Resource
 
 echo "Update Success"
 
 cd ..
-echo $version > version.txt
-git add -f version.txt
-git commit -m $version && git push
+echo "$version" > version.txt
+git add version.txt
+git commit -m "$version" && git push
