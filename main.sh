@@ -42,17 +42,20 @@ python3 ../webp.py
 mkdir -p Resource
 cd Resource
 
-mv ../avatar/* ./avatar/ 2>/dev/null || true
-mv ../chart/* ./chart/ 2>/dev/null || true
-mv ../illustration/* ./illustration/ 2>/dev/null || true
-mv ../illustrationBlur/* ./illustrationBlur/ 2>/dev/null || true
-mv ../illustrationLowRes/* ./illustrationLowRes/ 2>/dev/null || true
-mv ../info/* ./info/ 2>/dev/null || true
-mv ../music/* ./music/ 2>/dev/null || true
+mv ../avatar/* ./avatar/ 
+mv ../chart/* ./chart/ 
+mv ../illustration/* ./illustration/ 
+mv ../illustrationBlur/* ./illustrationBlur/ 
+mv ../illustrationLowRes/* ./illustrationLowRes/ 
+mv ../info/* ./info/ 
+mv ../music/* ./music/ 
 
+ls -la
+
+cd ..
 
 # 提交所有更改
-git add -f ./*
+git add -f Resource/*
 git commit -m "$version"
 git push origin Resource
 
