@@ -39,24 +39,14 @@ python3 ../gameInformation.py ../Phigros.apk
 python3 ../resource.py ../Phigros.apk
 python3 ../webp.py
 
-mkdir -p Resource
-cd Resource
-
-mkdir -p avatar chart illustration illustrationBlur illustrationLowRes info music
-
-mv ../avatar/* ./avatar/ 
-mv ../chart/* ./chart/ 
-mv ../illustration/* ./illustration/ 
-mv ../illustrationBlur/* ./illustrationBlur/ 
-mv ../illustrationLowRes/* ./illustrationLowRes/ 
-mv ../info/* ./info/ 
-mv ../music/* ./music/ 
+git rm -r --cached .
 
 ls -la
 
 
 # 提交所有更改
-git add -f .
+git add -f avatar/ chart/ illustration/ illustrationBlur/ illustrationLowRes/ info/ music/
+
 git commit -m "$version"
 git push origin Resource
 
