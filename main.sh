@@ -57,7 +57,7 @@ ls -la
 cd ..
 
 # 提交所有更改
-git add -f Resource/*
+git add -f Resource/
 git commit -m "$version"
 git push origin Resource
 
