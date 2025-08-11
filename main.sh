@@ -42,6 +42,8 @@ python3 ../webp.py
 mkdir -p Resource
 cd Resource
 
+mkdir -p avatar chart illustration illustrationBlur illustrationLowRes info music
+
 mv ../avatar/* ./avatar/ 
 mv ../chart/* ./chart/ 
 mv ../illustration/* ./illustration/ 
