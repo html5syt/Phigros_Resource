@@ -18,7 +18,7 @@ pip install fsb5
 
 # 使用带token的URL进行克隆
 REPO_URL="https://html5syt:${GITHUB_TOKEN}@github.com/html5syt/Phigros_Resource"
-git clone --single-branch -b master "$REPO_URL" Phigros_Resource
+git clone --single-branch -b master "$REPO_URL"
 
 wget -nv -O Phigros.apk "$(cat url.txt)"
 java -jar PhigrosMetadata-1.2.jar Phigros.apk
