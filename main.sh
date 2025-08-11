@@ -49,7 +49,7 @@ mv info/* info/ 2>/dev/null || true
 mv music/* music/ 2>/dev/null || true
 
 # 提交所有更改
-git add -f .
+git add -f chart/* illustration/* illustrationBlur/* illustrationLowRes/* info/* music/* avatar/*
 git commit -m "$version"
 git push origin Resource
 
