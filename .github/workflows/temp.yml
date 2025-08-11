@@ -1,59 +1,43 @@
-name: Merge Legacy Branches to Resource
+name: Cleanup Old Branches
 
 on:
   workflow_dispatch:
+    inputs:
+      branches:
+        description: "要删除的分支列表(逗号分隔)"
+        required: true
+        default: "avatar,chart,illustration,illustrationBlur,illustrationLowRes,info,music"
+
+permissions:
+  contents: write
 
 jobs:
-  merge-branches:
+  cleanup:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Git
-      run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        
-    - name: Create Resource branch
-      run: |
-        # 创建或切换到Resource分支
-        git checkout -B Resource
-        
-        # 创建目录结构
-        mkdir -p {avatar,chart,illustration,illustrationBlur,illustrationLowRes,info,music}
-        git add .
-        git commit -m "Initialize Resource branch" || echo "No changes"
-        git push origin Resource
-        
-    - name: Merge legacy branches
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # 合并每个旧分支到对应目录
-        for branch in avatar chart illustration illustrationBlur illustrationLowRes info music; do
-          echo "Merging $branch branch..."
+      - name: Delete old branches
+        run: |
+          # 设置Git身份
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
           
-          # 获取旧分支内容
-          git fetch origin $branch:$branch
+          # 从输入中获取分支列表
+          IFS=',' read -ra BRANCHES <<< "${{ github.event.inputs.branches }}"
           
-          # 切换到Resource分支
-          git checkout Resource
+          # 删除本地和远程分支
+          for branch in "${BRANCHES[@]}"; do
+            echo "Deleting branch: $branch"
+            
+            # 删除远程分支
+            git push origin --delete "$branch" || true
+            
+            # 删除本地分支引用
+            git branch -D "$branch" || true
+          done
           
-          # 合并到对应目录
-          git checkout $branch -- .
-          mkdir -p $branch
-          mv -f !("$branch") "$branch"/ || true
-          
-          # 提交更改
-          git add .
-          git commit -m "Merge $branch branch into Resource"
-          git push origin Resource
-        done
-        
-        echo "All branches merged to Resource branch"
+          echo "Old branches deleted successfully"
