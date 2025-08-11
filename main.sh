@@ -54,10 +54,9 @@ mv ../music/* ./music/
 
 ls -la
 
-cd ..
 
 # 提交所有更改
-git add -f Resource/
+git add -f .
 git commit -m "$version"
 git push origin Resource
 
