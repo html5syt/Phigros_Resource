@@ -39,17 +39,20 @@ python3 ../gameInformation.py ../Phigros.apk
 python3 ../resource.py ../Phigros.apk
 python3 ../webp.py
 
-# 移动资源到对应目录
-mv avatar/* avatar/ 2>/dev/null || true
-mv chart/* chart/ 2>/dev/null || true
-mv illustration/* illustration/ 2>/dev/null || true
-mv illustrationBlur/* illustrationBlur/ 2>/dev/null || true
-mv illustrationLowRes/* illustrationLowRes/ 2>/dev/null || true
-mv info/* info/ 2>/dev/null || true
-mv music/* music/ 2>/dev/null || true
+mkdir -p Resource
+cd Resource
+
+mv ../avatar/* ./avatar/ 2>/dev/null || true
+mv ../chart/* ./chart/ 2>/dev/null || true
+mv ../illustration/* ./illustration/ 2>/dev/null || true
+mv ../illustrationBlur/* ./illustrationBlur/ 2>/dev/null || true
+mv ../illustrationLowRes/* ./illustrationLowRes/ 2>/dev/null || true
+mv ../info/* ./info/ 2>/dev/null || true
+mv ../music/* ./music/ 2>/dev/null || true
+
 
 # 提交所有更改
-git add -f chart/* illustration/* illustrationBlur/* illustrationLowRes/* info/* music/* avatar/*
+git add -f Resource/*
 git commit -m "$version"
 git push origin Resource
 
@@ -57,5 +60,5 @@ echo "Update Success"
 
 cd ..
 echo "$version" > version.txt
-git add version.txt
+git add -f version.txt
 git commit -m "$version" && git push
